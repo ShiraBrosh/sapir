@@ -24,14 +24,23 @@ public class Ex1 {
 
         Board boardHandler = new Board(goalBoard);
         State initialState = new State(initialBoard, 0, "", -1);
-
         State result = null;
         long startTime = System.nanoTime();
         boolean recordOpenList = openListOption.equalsIgnoreCase("with open");
 
-        if (algorithm.equalsIgnoreCase("BFS")) {
-            result = BFS.search(initialState, boardHandler, recordOpenList);
-            // נכניס את שאר האלגוריתמים כאן...
+        // משתנה לשמירת מספר הצמתים שנוצרו
+        int visitedNodes = 0;
+
+        switch(algorithm.toUpperCase()) {
+            case "BFS":
+                result = BFS.search(initialState, boardHandler, recordOpenList);
+                visitedNodes = BFS.getVisitedNodes();
+                break;
+            case "DFID":
+                result = DFID.search(initialState, boardHandler, recordOpenList);
+                visitedNodes = DFID.getVisitedNodes();
+                break;
+            // נוסיף כאן את שאר האלגוריתמים בהמשך
         }
 
         long endTime = System.nanoTime();
@@ -43,7 +52,7 @@ public class Ex1 {
                 path = path.substring(0, path.length() - 2);
             }
             writer.write(path + "\n");
-            writer.write("Num: " + BFS.getVisitedNodes() + "\n");
+            writer.write("Num: " + visitedNodes + "\n");
             writer.write("Cost: " + result.getCost() + "\n");
 
             if (timeOption.equalsIgnoreCase("with time")) {
@@ -51,7 +60,7 @@ public class Ex1 {
             }
         } else {
             writer.write("no path\n");
-            writer.write("Num: " + BFS.getVisitedNodes() + "\n");
+            writer.write("Num: " + visitedNodes + "\n");
             writer.write("Cost: inf\n");
             if (timeOption.equalsIgnoreCase("with time")) {
                 writer.write(String.format("%.3f seconds\n", (endTime - startTime) / 1e9));
