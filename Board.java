@@ -7,7 +7,6 @@ public class Board {
     private static final int CostRED = 10;
     private static final int CostBLUE = 1;
     private static final int CostGREEN = 3;
-
     private char[][] goalBoard;
     private int lastFromI = -1;
     private int lastFromJ = -1;
@@ -49,22 +48,19 @@ public class Board {
     }
 
     private boolean isOppositeMove(int fromI, int fromJ, int toI, int toJ) {
-        if (lastFromI == -1) { // אם זה המהלך הראשון
+        if (lastFromI == -1) {
             return false;
         }
-
-        // בודקים אם המהלך הנוכחי הפוך למהלך הקודם
         return (fromI == lastToI && fromJ == lastToJ &&
                 toI == lastFromI && toJ == lastFromJ);
     }
 
     private void movePoint(List<State> states, char[][] board, int i, int j, State curr) {
-        int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}}; // למעלה, ימינה, למטה, שמאלה
+        int[][] directions = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
         for (int[] direction : directions) {
             int newI = (i + direction[0] + SIZE) % SIZE;
             int newJ = (j + direction[1] + SIZE) % SIZE;
 
-            // בודקים אם זה מהלך הפוך
             if (isOppositeMove(i, j, newI, newJ)) {
                 continue;
             }
@@ -78,7 +74,6 @@ public class Board {
                         String.format("(%d,%d):%c:(%d,%d)--",
                                 i + 1, j + 1, board[i][j], newI + 1, newJ + 1);
 
-                // שומרים את המהלך הנוכחי כמהלך האחרון
                 lastFromI = i;
                 lastFromJ = j;
                 lastToI = newI;
@@ -104,5 +99,47 @@ public class Board {
 
     public char[][] getGoalBoard() {
         return copyBoard(goalBoard);
+    }
+
+    public int heuristic(char[][] currentBoard, char[][] goalBoard) {
+        int totalDistance = 0;
+
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                char currentCell = currentBoard[i][j];
+
+                if (currentCell == '_' || currentCell == 'X') continue;
+
+                int[] goalPosition = findGoalPosition(currentCell, goalBoard);
+
+                int manhattanDistance = Math.abs(i - goalPosition[0]) + Math.abs(j - goalPosition[1]);
+
+                int penalty = getPenalty(currentCell);
+
+                totalDistance += (manhattanDistance * penalty);
+            }
+        }
+
+        return totalDistance;
+    }
+
+    private int[] findGoalPosition(char cell, char[][] goalBoard) {
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (goalBoard[i][j] == cell) {
+                    return new int[]{i, j};
+                }
+            }
+        }
+        return new int[]{-1, -1};
+    }
+
+    private int getPenalty(char cell) {
+        switch (cell) {
+            case 'B': return 1;   // כחול
+            case 'G': return 3;   // ירוק
+            case 'R': return 10;  // אדום
+            default: return 0;
+        }
     }
 }

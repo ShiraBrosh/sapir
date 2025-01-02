@@ -40,7 +40,10 @@ public class Ex1 {
                 result = DFID.search(initialState, boardHandler, recordOpenList);
                 visitedNodes = DFID.getVisitedNodes();
                 break;
-            // נוסיף כאן את שאר האלגוריתמים בהמשך
+            case "A*":
+                result = AStar.search(initialState, boardHandler, recordOpenList);
+                visitedNodes = AStar.getVisitedNodes();
+                break;
         }
 
         long endTime = System.nanoTime();

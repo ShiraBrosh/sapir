@@ -1,11 +1,13 @@
 import java.util.Arrays;
 
-// State.java
 public class State {
     private char[][] board;
     private int cost;
     private String path;
     private int lastDirection;
+    private int hValue;
+    private int fValue;
+    private int generationTime;
 
     public State(char[][] board, int cost, String path, int lastDirection) {
         this.board = board != null ? copyBoard(board) : null;
@@ -17,9 +19,14 @@ public class State {
     public char[][] copyBoard(char[][] board) {
         char[][] copyB = new char[board.length][board[0].length];
         for (int i = 0; i < board.length; i++) {
-            copyB[i] = Arrays.copyOf(board[i], board[i].length);
+            copyB[i] = Arrays.copyOf(board[i], board[0].length);
         }
         return copyB;
+    }
+
+    public void calculateHeuristic(Board boardHandler) {
+        this.hValue = boardHandler.heuristic(this.board, boardHandler.getGoalBoard());
+        this.fValue = this.cost + this.hValue;
     }
 
     public char[][] getBoard() {
@@ -36,6 +43,22 @@ public class State {
 
     public int getLastDirection() {
         return lastDirection;
+    }
+
+    public int getHValue() {
+        return hValue;
+    }
+
+    public int getFValue() {
+        return fValue;
+    }
+
+    public int getGenerationTime() {
+        return generationTime;
+    }
+
+    public void setGenerationTime(int generationTime) {
+        this.generationTime = generationTime;
     }
 
     @Override
